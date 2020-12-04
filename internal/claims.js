@@ -8,12 +8,12 @@ module.exports.removeClaim = (contracts, _point, _protocol, _claim) =>
 
 
 module.exports.getClaim = (contracts, whose, index) =>
-  contracts.claims.methods.claims(whose, index).call();
+  contracts.claims.callStatic.claims(whose, index);
 
 module.exports.getAllClaims = (contracts, whose) =>
   Promise.all(
     [...Array(16).keys()].map((i) =>
-      contracts.claims.methods.claims(whose, i).call()
+      contracts.claims.callStatic.claims(whose, i)
     )
   ).then((claims) =>
     claims.filter(

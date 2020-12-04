@@ -2,25 +2,25 @@
 const gen = require('./genTransaction')
 
 module.exports.pools = (contracts, pool, prefix) =>
-  contracts.delegatedSending.methods.pools(pool, prefix).call()
+  contracts.delegatedSending.callStatic.pools(pool, prefix)
 
 module.exports.getInvited = (contracts, point) =>
-  contracts.delegatedSending.methods.getInvited(point).call()
+  contracts.delegatedSending.callStatic.getInvited(point)
 
 module.exports.invitedBy = (contracts, point) =>
-  contracts.delegatedSending.methods.invitedBy(point).call()
+  contracts.delegatedSending.callStatic.invitedBy(point)
 
 module.exports.canSend = (contracts, as, point) =>
-  contracts.delegatedSending.methods.canSend(as, point).call()
+  contracts.delegatedSending.callStatic.canSend(as, point)
 
 module.exports.getPool = (contracts, point) =>
-  contracts.delegatedSending.methods.getPool(point).call()
+  contracts.delegatedSending.callStatic.getPool(point)
 
 module.exports.getPoolStars = (contracts, pool) =>
-  contracts.delegatedSending.methods.getPoolStars(pool).call()
+  contracts.delegatedSending.callStatic.getPoolStars(pool)
 
 module.exports.canReceive = (contracts, recipient) =>
-  contracts.delegatedSending.methods.canReceive(recipient).call()
+  contracts.delegatedSending.callStatic.canReceive(recipient)
 
 module.exports.setPoolSize = (contracts, _as, _for, _size) =>
   gen.tx(contracts.delegatedSending, 'setPoolSize', _as, _for, _size)

@@ -2,22 +2,22 @@
 const gen = require('./genTransaction')
 
 module.exports.getBatch = (contracts, address) =>
-  contracts.linearSR.methods.batches(address).call()
+  contracts.linearSR.callStatic.batches(address)
 
 module.exports.getRemainingStars = (contracts, address) =>
-  contracts.linearSR.methods.getRemainingStars(address).call()
+  contracts.linearSR.callStatic.getRemainingStars(address)
 
 module.exports.verifyBalance = (contracts, address) =>
-  contracts.linearSR.methods.verifyBalance(address).call()
+  contracts.linearSR.callStatic.verifyBalance(address)
 
 module.exports.getStartTime = (contracts) =>
-  contracts.linearSR.methods.start().call()
+  contracts.linearSR.callStatic.start()
 
 module.exports.getWithdrawLimit = (contracts, address) =>
-  contracts.linearSR.methods.withdrawLimit(address).call()
+  contracts.linearSR.callStatic.withdrawLimit(address)
 
 module.exports.getApprovedTransfer = (contracts, address) =>
-  contracts.linearSR.methods.transfers(address).call()
+  contracts.linearSR.callStatic.transfers(address)
 
 module.exports.approveBatchTransfer = (contracts, _to) =>
   gen.tx(contracts.linearSR, 'approveBatchTransfer', _to)

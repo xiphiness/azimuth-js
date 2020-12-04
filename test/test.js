@@ -1,10 +1,13 @@
 'use strict';
 
+const Web3 = require('web3')
 const assert = require('chai').assert;
 const bip39  = require('bip39');
 const hdkey  = require('hdkey');
-const Web3   = require('web3');
 const ethUtil  = require('ethereumjs-util');
+const { JsonRpcProvider } = require('@ethersproject/providers')
+const { formatBytes32String } = require ('@ethersproject/strings')
+const { Wallet } = require("@ethersproject/wallet");
 
 const ajs = require('..');
 const check = ajs.check;
@@ -72,7 +75,7 @@ async function firstUnownedGalaxy(contracts) {
   return galaxy;
 }
 
-async function sendTransaction(web3, tx, privateKey) {
+async function sendTransaction(provider, tx, privateKey) {
   if (!ethUtil.isValidPrivate(privateKey)) {
     throw "Invalid key";
   }
@@ -84,11 +87,9 @@ async function sendTransaction(web3, tx, privateKey) {
   //   Explicitly set the tx.from field to whoever owns the supplied private
   //   key.  We don't want to depend on the state of web3.eth.defaultAccount,
   //   implicitly or otherwise, ever.
-
-  tx.from = renderAsHex(addr);
-
-  let stx = await txn.signTransaction(web3, tx, privateKey);
-  return txn.sendSignedTransaction(web3, stx);
+  tx.from = ethUtil.toChecksumAddress(renderAsHex(addr));
+  let stx = await txn.signTransaction(provider, tx, privateKey);
+  return txn.sendSignedTransaction(provider, stx);
 }
 
 
@@ -96,11 +97,10 @@ async function sendTransaction(web3, tx, privateKey) {
 
 function main() {
 
-  let provider  = new Web3.providers.HttpProvider('http://localhost:8545');
-  let web3      = new Web3(provider);
-  let contracts = ajs.initContracts(web3, contractAddresses);
+  let provider  = new JsonRpcProvider('http://localhost:8545');
+  let contracts = ajs.initContracts(provider, contractAddresses);
 
-  const someBytes32 = web3.utils.asciiToHex('whatever');
+  const someBytes32 = formatBytes32String('whatever');
 
   let galaxy       = 0;
   let galaxyPlanet = 65536;
@@ -121,10 +121,9 @@ function main() {
     // been spawned, so we explicitly create ~zod and ~nec below.
 
     let tx = ecliptic.createGalaxy(contracts, 0, ac0);
-    await sendTransaction(web3, tx, pk0);
-
+    await sendTransaction(provider, tx, pk0);
     tx = ecliptic.createGalaxy(contracts, 1, ac0);
-    await sendTransaction(web3, tx, pk0);
+    await sendTransaction(provider, tx, pk0);
 
     galaxy   = await firstUnownedGalaxy(contracts);
     star1    = star1 + galaxy;
@@ -151,7 +150,7 @@ function main() {
       assert.isFalse(await azimuth.isOwner(contracts, galaxy, ac0));
 
       let tx = ecliptic.createGalaxy(contracts, galaxy, ac0);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.isOwner(contracts, galaxy, ac0));
     });
@@ -173,7 +172,7 @@ function main() {
 
     it('generates usable transaction', async function() {
       let tx = ecliptic.setManagementProxy(contracts, galaxy, ac2);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.canManage(contracts, galaxy, ac2));
     });
@@ -193,12 +192,12 @@ function main() {
 
     it('generates usable transaction', async function() {
       let tx = ecliptic.setVotingProxy(contracts, galaxy, ac2);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.canVoteAs(contracts, galaxy, ac2));
 
       tx = ecliptic.setVotingProxy(contracts, galaxy, ac0);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
     });
 
   });
@@ -221,7 +220,7 @@ function main() {
     it('can spawn child to self, directly', async function() {
       let tx = ecliptic.configureKeys(
                  contracts, galaxy, someBytes32, someBytes32, 1, false);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       can(await check.canSpawn(contracts, star1, ac0));
     });
@@ -234,11 +233,11 @@ function main() {
       assert.equal((await azimuth.getUnspawnedChildren(contracts, galaxy)).length, 255);
 
       let tx = ecliptic.spawn(contracts, star1, ac0);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       tx = ecliptic.configureKeys(
              contracts, star1, someBytes32, someBytes32, 1, false);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.isOwner(contracts, star1, ac0));
       assert.isTrue(await azimuth.isActive(contracts, star1));
@@ -246,7 +245,7 @@ function main() {
       assert.isFalse(await azimuth.isActive(contracts, star2));
 
       tx = ecliptic.spawn(contracts, star2, ac1);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.isOwner(contracts, star2, ac0));
       assert.isFalse(await azimuth.isActive(contracts, star2));
@@ -276,7 +275,7 @@ function main() {
       assert.isFalse(await azimuth.isSpawnProxy(contracts, galaxy, ac1));
 
       let tx = ecliptic.setSpawnProxy(contracts, galaxy, ac1);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.isSpawnProxy(contracts, galaxy, ac1));
     });
@@ -301,7 +300,7 @@ function main() {
       assert.isFalse(await azimuth.isOwner(contracts, star2, ac1));
 
       let tx = ecliptic.transferPoint(contracts, star2, ac1);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.isOwner(contracts, star2, ac1));
     });
@@ -320,7 +319,7 @@ function main() {
       assert.isFalse(await azimuth.isTransferProxy(contracts, galaxy, ac1));
 
       let tx = ecliptic.setTransferProxy(contracts, galaxy, ac1);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.isTransferProxy(contracts, galaxy, ac1));
     });
@@ -334,7 +333,7 @@ function main() {
            reasons.permission);
 
       let tx = ecliptic.setManagementProxy(contracts, galaxy, ac1);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       can(await check.canConfigureKeys(contracts, galaxy, ac1));
     });
@@ -358,7 +357,7 @@ function main() {
       can(await check.canEscape(contracts, star2, star1, ac1));
 
       let tx = ecliptic.escape(contracts, star2, star1);
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       assert.isTrue(await azimuth.isEscaping(contracts, star2));
     });
@@ -375,7 +374,7 @@ function main() {
 
     it('generates usable transaction', async function() {
       let tx = ecliptic.cancelEscape(contracts, star2);
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       assert.isFalse(await azimuth.isEscaping(contracts, star2));
     });
@@ -389,7 +388,7 @@ function main() {
            reasons.notEscape);
 
       let tx = ecliptic.escape(contracts, star2, star1);
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       can(await check.canAdopt(contracts, star2, ac0));
     });
@@ -399,7 +398,7 @@ function main() {
       assert.notEqual(sponsor, star1);
 
       let tx = ecliptic.adopt(contracts, star2);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       sponsor = (await azimuth.getPoint(contracts, star2)).sponsor;
       assert.equal(sponsor, star1);
@@ -414,7 +413,7 @@ function main() {
            reasons.notEscape);
 
       let tx = ecliptic.escape(contracts, star2, galaxy);
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       can(await check.canReject(contracts, star2, ac1));
     });
@@ -423,7 +422,7 @@ function main() {
       assert.isTrue(await azimuth.isEscaping(contracts, star2));
 
       let tx = ecliptic.reject(contracts, star2);
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       assert.isFalse(await azimuth.isEscaping(contracts, star2));
     });
@@ -441,7 +440,7 @@ function main() {
       assert.isTrue((await azimuth.getPoint(contracts, star2)).hasSponsor);
 
       let tx = ecliptic.detach(contracts, star2);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isFalse((await azimuth.getPoint(contracts, star2)).hasSponsor);
 
@@ -452,10 +451,10 @@ function main() {
 
   describe('#polls', async function() {
     it('cannot be done by non-voters', async function() {
-      cant(await check.canStartUpgradePoll(web3, contracts, star1),
+      cant(await check.canStartUpgradePoll(provider, contracts, star1),
         reasons.notGalaxy);
 
-      cant(await check.canStartUpgradePoll(web3, contracts, galaxy, zaddr, ac1),
+      cant(await check.canStartUpgradePoll(provider, contracts, galaxy, zaddr, ac1),
         reasons.permission);
 
       cant(await check.canStartDocumentPoll(contracts, star1),
@@ -478,32 +477,32 @@ function main() {
     });
 
     it('checks for proposal correctness', async function() {
-      cant(await check.canStartUpgradePoll(web3, contracts, galaxy, ac2, ac0),
+      cant(await check.canStartUpgradePoll(provider, contracts, galaxy, ac2, ac0),
         reasons.upgradePath);
     });
 
     it('generates usable transactions', async function() {
       this.timeout(10000) // this one can take awhile
 
-      let fakeHash = web3.utils.asciiToHex('poll hash ' + galaxy);
+      let fakeHash = formatBytes32String('poll hash ' + galaxy);
 
       cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
         reasons.pollInactive);
 
       await sendTransaction(
-        web3,
+        provider,
         ecliptic.startDocumentPoll(contracts, galaxy, fakeHash),
         pk0);
 
       can(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0));
 
       await sendTransaction(
-        web3,
+        provider,
         ecliptic.castDocumentVote(contracts, galaxy, fakeHash, true),
         pk0);
 
       await sendTransaction(
-        web3,
+        provider,
         ecliptic.updateDocumentPoll(contracts, fakeHash),
         pk0);
 
@@ -515,11 +514,11 @@ function main() {
   describe('#delegatedSending', async function() {
     it('sets up for tests', async function() {
       let prep = ecliptic.spawn(contracts, planet1c, ac0);
-      await sendTransaction(web3, prep, pk0);
-      prep = ecliptic.setSpawnProxy(contracts, star1, contracts.delegatedSending._address);
-      await sendTransaction(web3, prep, pk0);
-      prep = ecliptic.setSpawnProxy(contracts, star2, contracts.delegatedSending._address);
-      await sendTransaction(web3, prep, pk1);
+      await sendTransaction(provider, prep, pk0);
+      prep = ecliptic.setSpawnProxy(contracts, star1, contracts.delegatedSending.address);
+      await sendTransaction(provider, prep, pk0);
+      prep = ecliptic.setSpawnProxy(contracts, star2, contracts.delegatedSending.address);
+      await sendTransaction(provider, prep, pk1);
       // ac0 now owns planet1c (in addition to star1)
     });
 
@@ -533,9 +532,9 @@ function main() {
       assert.equal(await delsend.pools(contracts, planet1c, star1), 0);
 
       let tx = delsend.setPoolSize(contracts, star1, planet1c, 9);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
       tx = delsend.setPoolSize(contracts, star2, planet1c, 1);
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       assert.equal(await delsend.pools(contracts, planet1c, star1), 9);
       assert.equal(await delsend.pools(contracts, planet1c, star2), 1);
@@ -551,7 +550,7 @@ function main() {
 
     it('generates usable transaction', async function() {
       let tx = delsend.sendPoint(contracts, planet1c, planet1d, ac2);
-      await sendTransaction(web3, tx, pk0);
+      await sendTransaction(provider, tx, pk0);
 
       assert.isTrue(await azimuth.isTransferProxy(contracts, planet1d, ac2));
       assert.equal(await delsend.pools(contracts, planet1c, star1), 8);
@@ -575,7 +574,7 @@ function main() {
       let tx = ecliptic.configureKeys(
         contracts, star2, someBytes32, someBytes32, 1, false
       );
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       longList = await delsend.getPlanetsToSend(contracts, planet1c, 15);
       count = await delsend.getTotalUsableInvites(contracts, planet1c);
@@ -583,7 +582,7 @@ function main() {
       assert.equal(count, 9);
 
       tx = ecliptic.setSpawnProxy(contracts, star2, zaddr);
-      await sendTransaction(web3, tx, pk1);
+      await sendTransaction(provider, tx, pk1);
 
       longList = await delsend.getPlanetsToSend(contracts, planet1c, 15);
       count = await delsend.getTotalUsableInvites(contracts, planet1c);
@@ -596,7 +595,7 @@ function main() {
   describe('#eventLog', async function() {
 
     it('can find activated ship block', async function() {
-      const latest = await web3.eth.getBlockNumber();
+      const latest = await provider.getBlockNumber();
       const res = await azimuth.getActivationBlock(
         contracts,
         star1,
@@ -607,7 +606,7 @@ function main() {
     });
 
     it('cannot find unactivated ship block', async function() {
-      const latest = await web3.eth.getBlockNumber();
+      const latest = await provider.getBlockNumber();
       const res = await azimuth.getActivationBlock(
         contracts,
         star3,
@@ -624,7 +623,7 @@ function main() {
     const dossier = '0x00';
     it('can write a claim', async function() {
       const newClaimTx = await claims.addClaim(contracts, galaxy, protocol, btcAddress, dossier);
-      await sendTransaction(web3, newClaimTx, pk0);
+      await sendTransaction(provider, newClaimTx, pk0);
 
       const claim = await claims.getClaim(contracts, galaxy, 0);
 
@@ -637,7 +636,7 @@ function main() {
       const ethProtocol = 'ETH'
       const ethDossier = '0x01';
       const newClaimTx = await claims.addClaim(contracts, galaxy, ethProtocol, ethAddress, ethDossier);
-      await sendTransaction(web3, newClaimTx, pk0);
+      await sendTransaction(provider, newClaimTx, pk0);
 
       const allClaims = await claims.getAllClaims(contracts, galaxy);
 

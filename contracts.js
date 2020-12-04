@@ -3,97 +3,104 @@
  * @module contracts
  */
 
-const eclipticAbi =
-  require('azimuth-solidity/build/contracts/Ecliptic.json').abi;
+const { Contract } = require("@ethersproject/contracts");
 
-const azimuthAbi =
-  require('azimuth-solidity/build/contracts/Azimuth.json').abi;
+const { Web3Provider } = require("@ethersproject/providers");
 
-const pollsAbi =
-  require('azimuth-solidity/build/contracts/Polls.json').abi;
+const eclipticAbi = require("azimuth-solidity/build/contracts/Ecliptic.json")
+  .abi;
 
-const claimsAbi =
-  require('azimuth-solidity/build/contracts/Claims.json').abi;
+const azimuthAbi = require("azimuth-solidity/build/contracts/Azimuth.json").abi;
 
-const linearStarReleaseAbi =
-  require('azimuth-solidity/build/contracts/LinearStarRelease.json').abi;
+const pollsAbi = require("azimuth-solidity/build/contracts/Polls.json").abi;
 
-const delegatedSendingAbi =
-  require('azimuth-solidity/build/contracts/DelegatedSending.json').abi;
+const claimsAbi = require("azimuth-solidity/build/contracts/Claims.json").abi;
 
-const conditionalStarReleaseAbi =
-  require('azimuth-solidity/build/contracts/ConditionalStarRelease.json').abi;
+const linearStarReleaseAbi = require("azimuth-solidity/build/contracts/LinearStarRelease.json")
+  .abi;
+
+const delegatedSendingAbi = require("azimuth-solidity/build/contracts/DelegatedSending.json")
+  .abi;
+
+const conditionalStarReleaseAbi = require("azimuth-solidity/build/contracts/ConditionalStarRelease.json")
+  .abi;
 
 /**
- * Create a collection of Urbit contracts, given a web3 instance and their
+ * Create a collection of Urbit contracts, given an ethereum provider and their
  * provided addresses.
- * @param {Object} web3 - A web3 instance.
+ * @param {Object} provider - Implementation of ethers' Provider or web3 instance.
  * @param {Object} addresses - An addresses object.  Must provide addresses for
  *   ecliptic, azimuth, and polls contracts, at those respective key names.
  * @return {Object} The initialised contracts.
  */
-const initContracts = (web3, addresses) => ({
-  ecliptic: newEcliptic(web3, addresses.ecliptic),
-  azimuth: newAzimuth(web3, addresses.azimuth),
-  polls: newPolls(web3, addresses.polls),
-  claims: newClaims(web3, addresses.claims),
-  linearSR: newLinearStarRelease(web3, addresses.linearSR),
-  conditionalSR: newConditionalStarRelease(web3, addresses.conditionalSR),
-  delegatedSending: newDelegatedSending(web3, addresses.delegatedSending),
-});
-
+const initContracts = (provider, addresses) => {
+  // N.B.
+  // this is an ugly hack, Web3Provider seems to fail with web3.currentProvider
+  // with the version of web3 old azimuth is pinned to
+  // maybe drop support for it entirely?
+  if ("currentProvider" in provider && window.ethereum) {
+    provider = new Web3Provider(window.ethereum);
+  }
+  return {
+    ecliptic: newEcliptic(provider, addresses.ecliptic),
+    azimuth: newAzimuth(provider, addresses.azimuth),
+    polls: newPolls(provider, addresses.polls),
+    claims: newClaims(provider, addresses.claims),
+    linearSR: newLinearStarRelease(provider, addresses.linearSR),
+    conditionalSR: newConditionalStarRelease(provider, addresses.conditionalSR),
+    delegatedSending: newDelegatedSending(provider, addresses.delegatedSending),
+  };
+};
 /**
  * Initialise as many Urbit contracts as possible, given a azimuth contract
  * address.
- * @param {Object} web3 - A web3 instance.
+ * @param {Object} provider - Implementation of ethers' Provider or web3 instance.
  * @param {String} azimuthAddress - An address to a azimuth contract.
  * @return {Object} The initialised contracts.
  */
-const initContractsPartial = async (web3, azimuthAddress) => {
-  let azimuth = newAzimuth(web3, azimuthAddress);
+const initContractsPartial = async (provider, azimuthAddress) => {
+  if ("currentProvider" in provider && window.ethereum) {
+    provider = new Web3Provider(window.ethereum);
+  }
+  let azimuth = newAzimuth(provider, azimuthAddress);
   let eclipticAddress = await azimuth.methods.owner().call();
-  let ecliptic = newEcliptic(web3, eclipticAddress);
+  let ecliptic = newEcliptic(provider, eclipticAddress);
   let pollsAddress = await ecliptic.methods.polls().call();
-  let polls = newPolls(web3, pollsAddress);
+  let polls = newPolls(provider, pollsAddress);
   let claimsAddress = await ecliptic.methods.claims().call();
-  let claims = newClaims(web3, claimsAddress);
+  let claims = newClaims(provider, claimsAddress);
   return {
     ecliptic: ecliptic,
     azimuth: azimuth,
     polls: polls,
-    claims: claims
+    claims: claims,
   };
-}
+};
 
-const newContract = (web3, address, abi) => {
-  let contract = new web3.eth.Contract(abi, address);
-  //NOTE this allows us to support a broader range of web3 versions.
-  //     see also #23.
-  contract._address = (contract._address || contract.address);
-  contract.address = contract._address;
-  return contract;
-}
+const newContract = (provider, address, abi) => {
+  return new Contract(address, abi, provider);
+};
 
-const newEcliptic = (web3, address) =>
-  newContract(web3, address, eclipticAbi);
+const newEcliptic = (provider, address) =>
+  newContract(provider, address, eclipticAbi);
 
-const newAzimuth = (web3, address) =>
-  newContract(web3, address, azimuthAbi);
+const newAzimuth = (provider, address) =>
+  newContract(provider, address, azimuthAbi);
 
-const newPolls = (web3, address) =>
-  newContract(web3, address, pollsAbi);
+const newPolls = (provider, address) =>
+  newContract(provider, address, pollsAbi);
 
-const newClaims = (web3, address) =>
-  newContract(web3, address, claimsAbi);
+const newClaims = (provider, address) =>
+  newContract(provider, address, claimsAbi);
 
-const newLinearStarRelease = (web3, address) =>
-  newContract(web3, address, linearStarReleaseAbi);
+const newLinearStarRelease = (provider, address) =>
+  newContract(provider, address, linearStarReleaseAbi);
 
-const newDelegatedSending = (web3, address) =>
-  newContract(web3, address, delegatedSendingAbi);
+const newDelegatedSending = (provider, address) =>
+  newContract(provider, address, delegatedSendingAbi);
 
-const newConditionalStarRelease = (web3, address) =>
-  newContract(web3, address, conditionalStarReleaseAbi);
+const newConditionalStarRelease = (provider, address) =>
+  newContract(provider, address, conditionalStarReleaseAbi);
 
 module.exports = {
   initContracts,
@@ -103,5 +110,5 @@ module.exports = {
   pollsAbi,
   claimsAbi,
   linearStarReleaseAbi,
-  delegatedSendingAbi
-}
+  delegatedSendingAbi,
+};

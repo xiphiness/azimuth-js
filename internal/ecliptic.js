@@ -2,28 +2,28 @@
 const gen = require('./genTransaction')
 
 module.exports.owner = (contracts) =>
-  contracts.ecliptic.methods.owner().call()
+  contracts.ecliptic.callStatic.owner()
 
 module.exports.balanceOf = (contracts, address) =>
-  contracts.ecliptic.methods.balanceOf(address).call()
+  contracts.ecliptic.callStatic.balanceOf(address)
 
 module.exports.ownerOf = (contracts, point) =>
-  contracts.ecliptic.methods.ownerOf(point).call()
+  contracts.ecliptic.callStatic.ownerOf(point)
 
 module.exports.exists = (contracts, point) =>
-  contracts.ecliptic.methods.exists(point).call()
+  contracts.ecliptic.callStatic.exists(point)
 
 module.exports.getApproved = (contracts, point) =>
-  contracts.ecliptic.methods.getApproved(point).call()
+  contracts.ecliptic.callStatic.getApproved(point)
 
 module.exports.isApprovedForAll = (contracts, owner, operator) =>
-  contracts.ecliptic.methods.isApprovedForAll(owner, operator).call()
+  contracts.ecliptic.callStatic.isApprovedForAll(owner, operator)
 
 module.exports.getSpawnLimit = (contracts, point, time) =>
-  contracts.ecliptic.methods.getSpawnLimit(point, time).call()
+  contracts.ecliptic.callStatic.getSpawnLimit(point, time)
 
 module.exports.canEscapeTo = (contracts, point, sponsor) =>
-  contracts.ecliptic.methods.canEscapeTo(point, sponsor).call()
+  contracts.ecliptic.callStatic.canEscapeTo(point, sponsor)
 
 module.exports.safeTransferFrom = (contracts, _from, _to, _point) =>
   gen.tx(contracts.ecliptic, 'safeTransferFrom', _from, _to, _point)

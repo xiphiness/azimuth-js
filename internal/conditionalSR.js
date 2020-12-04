@@ -2,31 +2,31 @@
 const gen = require('./genTransaction')
 
 module.exports.getCommitment = (contracts, address) =>
-  contracts.conditionalSR.methods.commitments(address).call()
+  contracts.conditionalSR.callStatic.commitments(address)
 
 module.exports.getRemainingStars = (contracts, address) =>
-  contracts.conditionalSR.methods.getRemainingStars(address).call()
+  contracts.conditionalSR.callStatic.getRemainingStars(address)
 
 module.exports.getBatches = (contracts, address) =>
-  contracts.conditionalSR.methods.getBatches(address).call()
+  contracts.conditionalSR.callStatic.getBatches(address)
 
 module.exports.verifyBalance = (contracts, address) =>
-  contracts.conditionalSR.methods.verifyBalance(address).call()
+  contracts.conditionalSR.callStatic.verifyBalance(address)
 
 module.exports.getWithdrawLimit = (contracts, address, _batch) =>
-  contracts.conditionalSR.methods.withdrawLimit(address, _batch).call()
+  contracts.conditionalSR.callStatic.withdrawLimit(address, _batch)
 
 module.exports.getApprovedTransfer = (contracts, address) =>
-  contracts.conditionalSR.methods.transfers(address).call()
+  contracts.conditionalSR.callStatic.transfers(address)
 
 module.exports.getConditionsState = (contracts) =>
-  contracts.conditionalSR.methods.getConditionsState().call()
+  contracts.conditionalSR.callStatic.getConditionsState()
 
 module.exports.getWithdrawn = (contracts, address) =>
-  contracts.conditionalSR.methods.getWithdrawn(address).call();
+  contracts.conditionalSR.callStatic.getWithdrawn(address);
 
 module.exports.getForfeited = (contracts, address) =>
-  contracts.conditionalSR.methods.getForfeited(address).call()
+  contracts.conditionalSR.callStatic.getForfeited(address)
 
 module.exports.approveCommitmentTransfer = (contracts, _to) =>
   gen.tx(contracts.conditionalSR, 'approveCommitmentTransfer', _to)

@@ -3,70 +3,74 @@
  * @module txn
  */
 
-const utils = require('./utils');
+const { Wallet } = require("@ethersproject/wallet");
+const utils = require("./utils");
 
 function renderAsHex(value) {
-  return utils.addHexPrefix(value.toString('hex'));
+  return utils.addHexPrefix(value.toString("hex"));
 }
 
 /**
  * Sign an unsigned transaction with the provided private key.
  *
  * If `tx.gas` is undefined, it will be estimated.  If `tx.gasPrice` is
- * undefined, a default is used.  If `tx.nonce` is undefined, Web3 will
- * retrieve the next nonce.  And if `tx.chainId` is undefined, Web3 fills it
+ * undefined, a default is used.  If `tx.nonce` is undefined, Ethers will
+ * retrieve the next nonce.  And if `tx.chainId` is undefined, Ethers fills it
  * in.
  *
- * Note that Web3 cannot fill in most of those blanks when not connected to
+ * Note that Ethers cannot fill in most of those blanks when not connected to
  * a functioning node (i.e. "offline mode"), so those will have to be filled
  * in by the UI or user prior to signing.
  *
- * @param {Web3} web3 - a web3 object.
+ * @param {Provider} provider - a provider object.
  * @param {Object} tx - an unsigned transaction.
  * @param {Buffer} privateKey - a private key.
  * @return {Promise<Object>} A signed transaction object with `messageHash`,
  *  `v`, `r`, `s`, and `rawTransaction` fields.
  */
-async function signTransaction(web3, tx, privateKey) {
+async function signTransaction(provider, tx, privateKey) {
+  let pk = renderAsHex(privateKey);
+  const signer = new Wallet(pk).connect(provider);
   if (!utils.isValidPrivate(privateKey)) {
     throw "Invalid key";
   }
-  if (!tx.gas) {
-    let preliminary = await web3.eth.estimateGas(tx);
-    tx.gas          = Math.floor(preliminary * 2.1);
+  if (!tx.gasLimit) {
+    let preliminary = await signer.estimateGas(tx);
+    tx.gasLimit = Math.floor(preliminary * 2.1);
   }
-  let pk = renderAsHex(privateKey);
-  return web3.eth.accounts.signTransaction(tx, pk);
+  if(!tx.nonce) {
+    tx.nonce = await provider.getTransactionCount(tx.from)
+  }
+  return signer.signTransaction(tx);
 }
 
 /**
  * Forward a signed transaction to the blockchain.
- * @param {Web3} web3 - a web3 object.
+ * @param {Provider} provider - a provider object.
  * @param {Object} signedTx - a signed transaction.
  * @return {Promise}
  */
-function sendSignedTransaction(web3, signedTx) {
-  let stx = signedTx.rawTransaction;
-  return new Promise((resolve, reject) => {
-    web3.eth
-      .sendSignedTransaction(stx)
-      .once('confirmation', (n, receipt) => {
-        if (receipt.status) {
-          resolve();
-        } else {
-          reject();
-        }
+function sendSignedTransaction(provider, stx) {
+  return new Promise((resolve, reject) =>
+    provider
+      .sendTransaction(stx)
+      .then((res) => {
+        return res.wait(1).then((receipt) => {
+          if (receipt.status) {
+            resolve(receipt);
+          } else {
+            reject(receipt);
+          }
+        });
       })
-      .on('error', (e) => {
-        // eslint-disable-next-line no-console
+      .catch((e) => {
         console.error(e);
-        reject();
-      });
-  });
+        reject(e);
+      })
+  );
 }
 
 module.exports = {
   signTransaction,
-  sendSignedTransaction
-}
-
+  sendSignedTransaction,
+};

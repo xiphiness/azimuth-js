@@ -1,40 +1,40 @@
 
 module.exports.getPollDuration = (contracts) =>
-  contracts.polls.methods.pollDuration().call()
+  contracts.polls.callStatic.pollDuration()
 
 module.exports.getPollCooldown = (contracts) =>
-  contracts.polls.methods.pollCooldown().call()
+  contracts.polls.callStatic.pollCooldown()
 
 module.exports.getTotalVoters = (contracts) =>
-  contracts.polls.methods.totalVoters().call()
+  contracts.polls.callStatic.totalVoters()
 
 module.exports.getDocumentProposals = (contracts) =>
-  contracts.polls.methods.getDocumentProposals().call()
+  contracts.polls.callStatic.getDocumentProposals()
 
 module.exports.getUpgradeProposals = (contracts) =>
-  contracts.polls.methods.getUpgradeProposals().call()
+  contracts.polls.callStatic.getUpgradeProposals()
 
 module.exports.getDocumentMajorities = (contracts) =>
-  contracts.polls.methods.getDocumentMajorities().call()
+  contracts.polls.callStatic.getDocumentMajorities()
 
 module.exports.getUpgradePoll = (contracts, proposal) =>
-  contracts.polls.methods.upgradePolls(proposal).call()
+  contracts.polls.callStatic.upgradePolls(proposal)
 
 module.exports.getDocumentPoll = (contracts, proposal) =>
-  contracts.polls.methods.documentPolls(proposal).call()
+  contracts.polls.callStatic.documentPolls(proposal)
 
 module.exports.eclipticHasAchievedMajority = (contracts, proposal) =>
-  contracts.polls.methods.eclipticHasAchievedMajority(proposal).call()
+  contracts.polls.callStatic.eclipticHasAchievedMajority(proposal)
 
 module.exports.documentHasAchievedMajority = (contracts, proposal) =>
-  contracts.polls.methods.documentHasAchievedMajority(proposal).call()
+  contracts.polls.callStatic.documentHasAchievedMajority(proposal)
 
 module.exports.hasVotedOnUpgradePoll = (contracts, galaxy, proposal) =>
-  contracts.polls.methods.hasVotedOnUpgradePoll(galaxy, proposal).call()
+  contracts.polls.callStatic.hasVotedOnUpgradePoll(galaxy, proposal)
 
 module.exports.hasVotedOnDocumentPoll = (contracts, galaxy, proposal) =>
-  contracts.polls.methods.hasVotedOnDocumentPoll(galaxy, proposal).call()
+  contracts.polls.callStatic.hasVotedOnDocumentPoll(galaxy, proposal)
 
 module.exports.updateDocumentPoll = (contracts, proposal) =>
-  contracts.polls.methods.updateDocumentPoll(proposal).call()
+  contracts.polls.callStatic.updateDocumentPoll(proposal)
 

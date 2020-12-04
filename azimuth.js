@@ -3,8 +3,8 @@
  * @module azimuth
  */
 
-const internal = require('./internal/azimuth');
-const utils = require('./utils');
+const internal = require("./internal/azimuth");
+const utils = require("./utils");
 
 //  Generic API for azimuth
 //
@@ -23,7 +23,7 @@ const utils = require('./utils');
  * Unlike that of the Ecliptic, Polls, etc. contracts, the Azimuth contract's
  * address never changes.  It is also registered as 'azimuth.eth' on ENS.
  */
-const mainnet = '0x223c067f8cf28ae173ee5cafea60ca44c335fecb'
+const mainnet = "0x223c067f8cf28ae173ee5cafea60ca44c335fecb";
 
 /**
  * Check if an address is the owner of a point.
@@ -33,7 +33,7 @@ const mainnet = '0x223c067f8cf28ae173ee5cafea60ca44c335fecb'
  * @return {Promise<Bool>} True if owner of the point, false otherwise.
  */
 function isOwner(contracts, point, address) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return utils.addressEquals(point.owner, address);
   }
   return internal.isOwner(contracts, point, address);
@@ -46,7 +46,7 @@ function isOwner(contracts, point, address) {
  * @return {Promise<Address>} The point's owner.
  */
 function getOwner(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.owner;
   }
   return internal.getOwner(contracts, point);
@@ -59,7 +59,7 @@ function getOwner(contracts, point) {
  * @return {Promise<Bool>} True if the point is active, false otherwise.
  */
 function isActive(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.active;
   }
   return internal.isActive(contracts, point);
@@ -72,12 +72,12 @@ function isActive(contracts, point) {
  * @return {Promise<Object>} The point's key configuration.
  */
 function getKeys(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return {
-      encryptionKey:      point.encryptionKey,
-      authenticationKey:  point.authenticationKey,
+      encryptionKey: point.encryptionKey,
+      authenticationKey: point.authenticationKey,
       cryptoSuiteVersion: point.cryptoSuiteVersion,
-      keyRevisionNumber:  point.keyRevisionNumber
+      keyRevisionNumber: point.keyRevisionNumber,
     };
   }
   return internal.getKeys(contracts, point);
@@ -90,7 +90,7 @@ function getKeys(contracts, point) {
  * @return {Promise<Number>} The point's key revision number.
  */
 function getKeyRevisionNumber(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.keyRevisionNumber;
   }
   return internal.getKeyRevisionNumber(contracts, point);
@@ -103,7 +103,7 @@ function getKeyRevisionNumber(contracts, point) {
  * @return {Promise<Bool>} True if it has been booted, false otherwise.
  */
 function hasBeenLinked(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.keyRevisionNumber > 0;
   }
   return internal.hasBeenLinked(contracts, point);
@@ -116,7 +116,7 @@ function hasBeenLinked(contracts, point) {
  * @return {Promise<Bool>} True if the point is live, false otherwise.
  */
 function isLive(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     let ekey = point.encryptionKey;
     let akey = point.authenticationKey;
     let crsv = point.cryptoSuiteVersion;
@@ -133,7 +133,7 @@ function isLive(contracts, point) {
  * @return {Promise<Number>} The point's continuity number.
  */
 function getContinuityNumber(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.continuityNumber;
   }
   return internal.getContinuityNumber(contracts, point);
@@ -167,7 +167,7 @@ function getSpawned(contracts, point) {
  * @return {Promise<Number>} The point's sponsor.
  */
 function getSponsor(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.sponsor;
   }
   return internal.getSponsor(contracts, point);
@@ -196,7 +196,7 @@ const getSponsoringCount = internal.getSponsoringCount;
  * @return {Promise<Bool>} True if the point has a sponsor, false otherwise.
  */
 function hasSponsor(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.hasSponsor;
   }
   return internal.hasSponsor(contracts, point);
@@ -210,7 +210,7 @@ function hasSponsor(contracts, point) {
  * @return {Promise<Bool>} True if a sponsor, false otherwise.
  */
 function isSponsor(contracts, point, sponsor) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.hasSponsor && point.sponsor === sponsor;
   }
   return internal.isSponsor(contracts, point, sponsor);
@@ -223,7 +223,7 @@ function isSponsor(contracts, point, sponsor) {
  * @return {Promise<Bool>} True if requesting escape, false otherwise.
  */
 function isEscaping(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.escapeRequested;
   }
   return internal.isEscaping(contracts, point);
@@ -236,7 +236,7 @@ function isEscaping(contracts, point) {
  * @return {Promise<Number>} The sponsor point number.
  */
 function getEscapeRequest(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.escapeRequestedTo;
   }
   return internal.getEscapeRequest(contracts, point);
@@ -267,7 +267,7 @@ const getEscapeRequestsCount = internal.getEscapeRequestsCount;
  *  otherwise.
  */
 function isRequestingEscapeTo(contracts, point, sponsor) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.escapeRequested && point.escapeRequestedTo === sponsor;
   }
   return internal.isRequestingEscapeTo(contracts, point, sponsor);
@@ -281,7 +281,7 @@ function isRequestingEscapeTo(contracts, point, sponsor) {
  * @return {Promise<Bool>} True if address is spawn proxy, false otherwise.
  */
 function isSpawnProxy(contracts, point, address) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return utils.addressEquals(point.spawnProxy, address);
   }
   return internal.isSpawnProxy(contracts, point, address);
@@ -294,7 +294,7 @@ function isSpawnProxy(contracts, point, address) {
  * @return {Promise<String>} The spawn proxy's address.
  */
 function getSpawnProxy(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.spawnProxy;
   }
   return internal.getSpawnProxy(contracts, point);
@@ -309,7 +309,7 @@ function getSpawnProxy(contracts, point) {
  *  otherwise.
  */
 function isTransferProxy(contracts, point, address) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return utils.addressEquals(point.transferProxy, address);
   }
   return internal.isTransferProxy(contracts, point, address);
@@ -322,7 +322,7 @@ function isTransferProxy(contracts, point, address) {
  * @return {Promise<String>} The transfer proxy's address.
  */
 function getTransferProxy(contracts, point) {
-  if (typeof point === 'object') {
+  if (typeof point === "object") {
     return point.transferProxy;
   }
   return internal.getTransferProxy(contracts, point);
@@ -339,15 +339,17 @@ function getTransferProxy(contracts, point) {
  * @return {Number} The point's prefix.
  */
 function getPrefix(point) {
-  if (point < 65536) { return point % 256; }
+  if (point < 65536) {
+    return point % 256;
+  }
   return point % 65536;
 }
 
 let PointSize = {
   Galaxy: 0,
-  Star:   1,
-  Planet: 2
-}
+  Star: 1,
+  Planet: 2,
+};
 
 /**
  * Calculate the size of a point.
@@ -355,8 +357,12 @@ let PointSize = {
  * @return {Number} The point's size.
  */
 function getPointSize(point) {
-  if (point < 256)   { return PointSize.Galaxy; }
-  if (point < 65536) { return PointSize.Star; }
+  if (point < 256) {
+    return PointSize.Galaxy;
+  }
+  if (point < 65536) {
+    return PointSize.Star;
+  }
   return PointSize.Planet;
 }
 
@@ -375,13 +381,13 @@ const owner = internal.owner;
  * @return {Promise<Object>} A point object with the requested data.
  */
 async function getPoint(contracts, point, what) {
-  what = what || 'both';
+  what = what || "both";
   let data = {};
-  if (what === 'both' || what === 'state') {
+  if (what === "both" || what === "state") {
     data = await internal.getPoint(contracts, point);
   }
-  if (what === 'both' || what === 'rights') {
-    Object.assign(data, await internal.getRights(contracts, point));
+  if (what === "both" || what === "rights") {
+    data = { ...data, ...(await internal.getRights(contracts, point)) };
   }
   return data;
 }
@@ -399,9 +405,9 @@ async function getUnspawnedChildren(contracts, point) {
   }
   let spawned = await getSpawned(contracts, point);
   let unspawned = [];
-  let childSpace = (size === PointSize.Galaxy) ? 0x100 : 0x10000;
+  let childSpace = size === PointSize.Galaxy ? 0x100 : 0x10000;
   for (let i = 1; i < childSpace; i++) {
-    let child = point + (i*childSpace);
+    let child = point + i * childSpace;
     if (spawned.indexOf(child) < 0) {
       unspawned.push(child);
     }
@@ -420,12 +426,19 @@ async function getUnspawnedChildren(contracts, point) {
  */
 async function getActivationBlock(contracts, point, minBlock, maxBlock) {
   minBlock = minBlock || 0;
-  maxBlock = maxBlock || 'latest';
-  const logs = await contracts.azimuth.getPastEvents('Activated', {
-    fromBlock: minBlock,
-    toBlock: maxBlock,
-    filter: { point: [point] },
-  });
+  maxBlock = maxBlock || "latest";
+
+  const logs = await contracts.azimuth.queryFilter(
+    {
+      address: contracts.azimuth.address,
+      topics: contracts.azimuth.interface.encodeFilterTopics("Activated", [
+        point,
+      ]),
+    },
+    minBlock,
+    maxBlock
+  );
+  
   if (logs.length === 0) {
     return 0;
   } else {
@@ -617,5 +630,5 @@ module.exports = {
   getPrefix,
   PointSize,
   getPointSize,
-  isOperator
-}
+  isOperator,
+};

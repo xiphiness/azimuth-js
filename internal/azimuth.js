@@ -1,129 +1,129 @@
 
 module.exports.owner = (contracts) =>
-  contracts.azimuth.methods.owner().call()
+  contracts.azimuth.callStatic.owner()
 
 module.exports.getPoint = (contracts, point) =>
-  contracts.azimuth.methods.points(point).call()
+  contracts.azimuth.callStatic.points(point)
 
 module.exports.getRights = (contracts, point) =>
-  contracts.azimuth.methods.rights(point).call()
+  contracts.azimuth.callStatic.rights(point)
 
 module.exports.getOwnedPoints = (contracts, address) =>
-  contracts.azimuth.methods.getOwnedPoints(address).call()
+  contracts.azimuth.callStatic.getOwnedPoints(address)
 
 module.exports.getOwnedPointCount = (contracts, address) =>
-  contracts.azimuth.methods.getOwnedPointCount(address).call()
+  contracts.azimuth.callStatic.getOwnedPointCount(address)
 
 module.exports.getOwnedPointAtIndex = (contracts, address, idx) =>
-  contracts.azimuth.methods.getOwnedPointAtIndex(address, idx).call()
+  contracts.azimuth.callStatic.getOwnedPointAtIndex(address, idx)
 
 module.exports.isOwner = (contracts, point, address) =>
-  contracts.azimuth.methods.isOwner(point, address).call()
+  contracts.azimuth.callStatic.isOwner(point, address)
 
 module.exports.getOwner = (contracts, point) =>
-  contracts.azimuth.methods.getOwner(point).call()
+  contracts.azimuth.callStatic.getOwner(point)
 
 module.exports.isManagementProxy = (contracts, owner, manager) =>
-  contracts.azimuth.methods.isManagementProxy(owner, manager).call()
+  contracts.azimuth.callStatic.isManagementProxy(owner, manager)
 
 module.exports.canManage = (contracts, point, address) =>
-  contracts.azimuth.methods.canManage(point, address).call()
+  contracts.azimuth.callStatic.canManage(point, address)
 
 module.exports.getManagerForCount = (contracts, address) =>
-  contracts.azimuth.methods.getManagerForCount(address).call()
+  contracts.azimuth.callStatic.getManagerForCount(address)
 
 module.exports.getManagerFor = (contracts, address) =>
-  contracts.azimuth.methods.getManagerFor(address).call()
+  contracts.azimuth.callStatic.getManagerFor(address)
 
 module.exports.isVotingProxy = (contracts, owner, delegate) =>
-  contracts.azimuth.methods.isVotingProxy(owner, delegate).call()
+  contracts.azimuth.callStatic.isVotingProxy(owner, delegate)
 
 module.exports.canVoteAs = (contracts, point, address) =>
-  contracts.azimuth.methods.canVoteAs(point, address).call()
+  contracts.azimuth.callStatic.canVoteAs(point, address)
 
 module.exports.getVotingForCount = (contracts, address) =>
-  contracts.azimuth.methods.getVotingForCount(address).call()
+  contracts.azimuth.callStatic.getVotingForCount(address)
 
 module.exports.getVotingFor = (contracts, address) =>
-  contracts.azimuth.methods.getVotingFor(address).call()
+  contracts.azimuth.callStatic.getVotingFor(address)
 
 module.exports.isActive = (contracts, point) =>
-  contracts.azimuth.methods.isActive(point).call()
+  contracts.azimuth.callStatic.isActive(point)
 
 module.exports.getKeys = (contracts, point) =>
-  contracts.azimuth.methods.getKeys(point).call()
+  contracts.azimuth.callStatic.getKeys(point)
 
 module.exports.getKeyRevisionNumber = (contracts, point) =>
-  contracts.azimuth.methods.getKeyRevisionNumber(point).call()
+  contracts.azimuth.callStatic.getKeyRevisionNumber(point)
 
 module.exports.hasBeenLinked = (contracts, point) =>
-  contracts.azimuth.methods.hasBeenLinked(point).call()
+  contracts.azimuth.callStatic.hasBeenLinked(point)
 
 module.exports.isLive = (contracts, point) =>
-  contracts.azimuth.methods.isLive(point).call()
+  contracts.azimuth.callStatic.isLive(point)
 
 module.exports.getContinuityNumber = (contracts, point) =>
-  contracts.azimuth.methods.getContinuityNumber(point).call()
+  contracts.azimuth.callStatic.getContinuityNumber(point)
 
 module.exports.getSpawnCount = (contracts, point) =>
-  contracts.azimuth.methods.getSpawnCount(point).call()
+  contracts.azimuth.callStatic.getSpawnCount(point)
 
 module.exports.getSpawned = (contracts, point) =>
-  contracts.azimuth.methods.getSpawned(point).call()
+  contracts.azimuth.callStatic.getSpawned(point)
 
 module.exports.getSponsor = (contracts, point) =>
-  contracts.azimuth.methods.getSponsor(point).call()
+  contracts.azimuth.callStatic.getSponsor(point)
 
 module.exports.getSponsoring = (contracts, point) =>
-  contracts.azimuth.methods.getSponsoring(point).call()
+  contracts.azimuth.callStatic.getSponsoring(point)
 
 module.exports.getSponsoringCount = (contracts, point) =>
-  contracts.azimuth.methods.getSponsoringCount(point).call()
+  contracts.azimuth.callStatic.getSponsoringCount(point)
 
 module.exports.hasSponsor = (contracts, point) =>
-  contracts.azimuth.methods.hasSponsor(point).call()
+  contracts.azimuth.callStatic.hasSponsor(point)
 
 module.exports.isSponsor = (contracts, point, sponsor) =>
-  contracts.azimuth.methods.isSponsor(point, sponsor).call()
+  contracts.azimuth.callStatic.isSponsor(point, sponsor)
 
 module.exports.isEscaping = (contracts, point) =>
-  contracts.azimuth.methods.isEscaping(point).call()
+  contracts.azimuth.callStatic.isEscaping(point)
 
 module.exports.getEscapeRequest = (contracts, point) =>
-  contracts.azimuth.methods.getEscapeRequest(point).call()
+  contracts.azimuth.callStatic.getEscapeRequest(point)
 
 module.exports.getEscapeRequests = (contracts, point) =>
-  contracts.azimuth.methods.getEscapeRequests(point).call()
+  contracts.azimuth.callStatic.getEscapeRequests(point)
 
 module.exports.getEscapeRequestsCount = (contracts, point) =>
-  contracts.azimuth.methods.getEscapeRequestsCount(point).call()
+  contracts.azimuth.callStatic.getEscapeRequestsCount(point)
 
 module.exports.isRequestingEscapeTo = (contracts, point, sponsor) =>
-  contracts.azimuth.methods.isRequestingEscapeTo(point, sponsor).call()
+  contracts.azimuth.callStatic.isRequestingEscapeTo(point, sponsor)
 
 module.exports.isSpawnProxy = (contracts, point, address) =>
-  contracts.azimuth.methods.isSpawnProxy(point, address).call()
+  contracts.azimuth.callStatic.isSpawnProxy(point, address)
 
 module.exports.getSpawnProxy = (contracts, point) =>
-  contracts.azimuth.methods.getSpawnProxy(point).call()
+  contracts.azimuth.callStatic.getSpawnProxy(point)
 
 module.exports.getSpawningForCount = (contracts, address) =>
-  contracts.azimuth.methods.getSpawningForCount(address).call()
+  contracts.azimuth.callStatic.getSpawningForCount(address)
 
 module.exports.getSpawningFor = (contracts, address) =>
-  contracts.azimuth.methods.getSpawningFor(address).call()
+  contracts.azimuth.callStatic.getSpawningFor(address)
 
 module.exports.isTransferProxy = (contracts, point, address) =>
-  contracts.azimuth.methods.isTransferProxy(point, address).call()
+  contracts.azimuth.callStatic.isTransferProxy(point, address)
 
 module.exports.getTransferProxy = (contracts, point) =>
-  contracts.azimuth.methods.getTransferProxy(point).call()
+  contracts.azimuth.callStatic.getTransferProxy(point)
 
 module.exports.getTransferringForCount = (contracts, address) =>
-  contracts.azimuth.methods.getTransferringForCount(address).call()
+  contracts.azimuth.callStatic.getTransferringForCount(address)
 
 module.exports.getTransferringFor = (contracts, address) =>
-  contracts.azimuth.methods.getTransferringFor(address).call()
+  contracts.azimuth.callStatic.getTransferringFor(address)
 
 module.exports.isOperator = (contracts, owner, operator) =>
-  contracts.azimuth.methods.isOperator(owner, operator).call()
+  contracts.azimuth.callStatic.isOperator(owner, operator)

@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test:deploy": "cd node_modules/azimuth-solidity && truffle deploy",
+    "test:deploy": "cd node_modules/azimuth-solidity && truffle deploy --skip-dry-run",
     "test:ganache": "ganache-cli --networkId 1 -m 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten' > /dev/null &",
     "test:setup": "npm run test:ganache && npm run test:deploy",
     "test:mocha": "nyc mocha --reporter spec --timeout 5000 --exit",
@@ -40,6 +40,10 @@
     "web3": "1.0.0-beta.54"
   },
   "dependencies": {
+    "@ethersproject/contracts": "^5.0.8",
+    "@ethersproject/providers": "^5.0.17",
+    "@ethersproject/strings": "^5.0.7",
+    "@ethersproject/wallet": "^5.0.9",
     "azimuth-solidity": "1.2.2",
     "ethereumjs-util": "^7.0.7",
     "urbit-ob": "^5.0.1"

@@ -3,6 +3,7 @@
  * @module check
  */
 
+const { Contract } = require('@ethersproject/contracts')
 const { eclipticAbi } = require('./contracts');
 const ecliptic = require('./ecliptic');
 const azimuth = require('./azimuth');
@@ -457,25 +458,26 @@ async function checkActivePointVoter(contracts, galaxy, voter) {
 /**
  * Check if a target address and point can initiate a upgrade poll at the
  *  given address.
- * @param {Object} web3 - A web3 object.
+ * @param {Object} provider - An ethers provider
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canStartUpgradePoll(web3, contracts, galaxy, proposal, address) {
+async function canStartUpgradePoll(provider, contracts, galaxy, proposal, address) {
+  // TODO: maybe provider should also support web3 object
   let asv = await checkActivePointVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false};
-  let prop = new web3.eth.Contract(eclipticAbi, proposal);
+  let prop = new Contract(proposal, eclipticAbi, provider);
   let expected;
   try {
-    expected = await prop.methods.previousEcliptic().call()
+    expected = await prop.callStatic.previousEcliptic()
   } catch(e) {
     expected = false;
   }
-  if (contracts.ecliptic._address !== expected) // FIXME (jtobin): inappropriate comparison here
+  if (contracts.ecliptic.address !== expected) // FIXME (jtobin): inappropriate comparison here
   {
     res.reason = reasons.upgradePath;
     return res;
